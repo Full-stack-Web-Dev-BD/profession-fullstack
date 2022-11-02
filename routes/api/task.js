@@ -50,6 +50,8 @@ TaskRouter.get('/:id', (req, res) => {
 			res.json(err).status(400)
 		})
 })
+
+
 TaskRouter.post('/perticipate', (req, res) => {
 	console.log(req.body)
 	Task.findById(req.body.id)
@@ -59,6 +61,28 @@ TaskRouter.post('/perticipate', (req, res) => {
 					res.json({ message: "You already  Perticipated !" })
 				} else {
 					task.users = [...task.users, req.body.uid]
+					task.save()
+						.then(updated => {
+							console.log(updated)
+							res.json(updated)
+						})
+				}
+			} else {
+				res.json({ message: 'Task not finded' }).status(404)
+			}
+		})
+		.catch(err => {
+			console.log(err)
+		})
+})
+TaskRouter.post('/reply', (req, res) => {
+	Task.findById(req.body.id)
+		.then(task => {
+			if (task) {
+				if (task.answers?.findIndex((obj) => obj.uid === req.body.uid) !== -1) {
+					res.json({ message: "You already  Answered !" })
+				} else {
+					task.answers = [...task.answers, { uid: req.body.uid, answer: req.body.answer, comment: '' }]
 					task.save()
 						.then(updated => {
 							console.log(updated)

@@ -3,6 +3,10 @@ body {
     padding: 0;
 }
 
+.cp {
+    cursor: pointer;
+}
+
 h3,
 h5,
 h6 {

@@ -48,9 +48,6 @@ const AdminDashboard = () => {
         getUsers()
         getTask()
     }, [])
-    const minuteToMS = (m) => {
-        return m * 60000
-    }
 
     const isExpire = (date, expTime) => {
         var taskDate = moment(date).add(expTime, 'm').toDate()

@@ -15,6 +15,10 @@ const taskSchema = new Schema({
 		type: Array,
 		default: []
 	},
+	answers: {
+		type: Array,
+		default: []
+	},
 	date: {
 		type: Date,
 		default: Date.now

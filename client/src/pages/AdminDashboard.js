@@ -137,7 +137,6 @@ const AdminDashboard = () => {
         <div>
             {
                 user.type == UserType.instructor ?
-
                     <div>
                         <div className='row'>
                             <div className='col-md-6'>

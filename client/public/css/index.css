@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+h3,
+h5,
+h6 {
+    color: gray;
+}
+
+.task_header {
+    display: flex;
+    justify-content: space-between;
+}

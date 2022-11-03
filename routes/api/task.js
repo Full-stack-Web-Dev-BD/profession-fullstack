@@ -43,7 +43,6 @@ TaskRouter.delete('/:id', (req, res) => {
 TaskRouter.get('/:id', (req, res) => {
 	Task.findById(req.params.id)
 		.then(task => {
-			console.log(task)
 			res.json(task).status(200)
 		})
 		.catch(err => {
@@ -53,7 +52,6 @@ TaskRouter.get('/:id', (req, res) => {
 
 
 TaskRouter.post('/perticipate', (req, res) => {
-	console.log(req.body)
 	Task.findById(req.body.id)
 		.then(task => {
 			if (task) {
@@ -63,7 +61,6 @@ TaskRouter.post('/perticipate', (req, res) => {
 					task.users = [...task.users, req.body.uid]
 					task.save()
 						.then(updated => {
-							console.log(updated)
 							res.json(updated)
 						})
 				}
@@ -73,6 +70,7 @@ TaskRouter.post('/perticipate', (req, res) => {
 		})
 		.catch(err => {
 			console.log(err)
+			res.json({ message: "Server Error" }).status(500)
 		})
 })
 TaskRouter.post('/reply', (req, res) => {
@@ -82,12 +80,103 @@ TaskRouter.post('/reply', (req, res) => {
 				if (task.answers?.findIndex((obj) => obj.uid === req.body.uid) !== -1) {
 					res.json({ message: "You already  Answered !" })
 				} else {
-					task.answers = [...task.answers, { uid: req.body.uid, answer: req.body.answer, comment: '' }]
+					task.answers = [...task.answers, { uid: req.body.uid, answer: req.body.answer }]
 					task.save()
 						.then(updated => {
-							console.log(updated)
 							res.json(updated)
 						})
+				}
+			} else {
+				console.log("Task Not Exist")
+				res.json({ message: 'Task not finded' }).status(404)
+			}
+		})
+		.catch(err => {
+			console.log(err)
+		})
+})
+
+TaskRouter.post('/feedback', (req, res) => {
+
+	// Task.findById(req.body.id)
+	// 	.then(task => {
+	// 		if (task) {
+	// 			var newTasks = [...task.answers,]
+	// 			newTasks[2] = {
+	// 				uid: newTasks[2].uid,
+	// 				answer: newTasks[2].answer,
+	// 				feedback: req.body.feedback
+	// 			}
+	// 			task.answers = [...newTasks]
+	// 			task.save()
+	// 				.then(updated => {
+	// 					res.json(updated)
+	// 				})
+	// 		} else {
+	// 			console.log("Task Not Exist")
+	// 			res.json({ message: 'Task not finded' }).status(404)
+	// 		}
+	// 	})
+	// 	.catch(err => {
+	// 		console.log(err)
+	// 	})
+	// return
+	Task.findById(req.body.id)
+		.then(task => {
+			if (task) {
+				if (task.answers?.findIndex((obj) => obj.uid === req.body.uid) !== -1) {
+					const myIndex = task.answers?.findIndex((obj) => obj.uid === req.body.uid)
+					if (task?.answers?.length - 1 == myIndex) {
+						var newAns = [...task.answers,]
+						newAns[0] = {
+							uid: newAns[0].uid,
+							answer: newAns[0].answer,
+							feedback: req.body.feedback
+						}
+						task.answers = [...newAns]
+						task.save()
+							.then(updated => {
+								console.log("feedback", updated)
+								res.json({ message: "Feedback submitted !!" })
+							})
+							.catch(err => {
+								console.log(err)
+							})
+					} else {
+						var newAns = [...task.answers,]
+						newAns[myIndex + 1] = {
+							uid: newAns[myIndex + 1].uid,
+							answer: newAns[myIndex + 1].answer,
+							feedback: req.body.feedback
+						}
+						task.answers = [...newAns]
+						task.save()
+							.then(updated => {
+								console.log("feedback", updated)
+								res.json({ message: "Feedback submitted !!" })
+							})
+							.catch(err => {
+								console.log(err)
+							})
+					}
+					// if (task?.answers?.length - 1 == myIndex) {
+					// 	task.answers[0] = { ...task.answers[0], comment: req.body.feedback }
+					// 	task.save()
+					// 	res.json({ message: "Feedback Submitted" })
+					// } else {
+					// 	var newAns= [...task]
+					// 	task.save()
+					// 		.then(rs => {
+					// 			Task.findById(req.body.id)
+					// 				.then(rc => {
+					// 					console.log("updated rc", rc)
+					// 				})
+					// 			console.log(rs, "haha")
+					// 			res.json({ message: "Ha ha " })
+					// 		})
+					// }
+				} else {
+					res.json({ message: "Answer  Not Finded" })
 				}
 			} else {
 				res.json({ message: 'Task not finded' }).status(404)

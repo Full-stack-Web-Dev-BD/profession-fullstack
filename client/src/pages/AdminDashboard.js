@@ -46,6 +46,10 @@ const AdminDashboard = () => {
         if (window.localStorage.getItem('authToken')) {
             setUser(jwtDecode(window.localStorage.getItem('authToken')))
         }
+        getUsers()
+        getTask()
+    }, [])
+    const getUsers = () => {
         axios.get(`${baseURL}/api/user/all-user`)
             .then(resp => {
                 setUsers(resp.data.reverse())
@@ -53,8 +57,7 @@ const AdminDashboard = () => {
             .catch(err => {
                 console.log(err)
             })
-        getTask()
-    }, [])
+    }
     const getTask = () => {
         axios.get(`${baseURL}/api/task`)
             .then(resp => {
@@ -73,9 +76,7 @@ const AdminDashboard = () => {
         })
             .then(resp => {
                 console.log(resp)
-                setTimeout(() => {
-                    window.location.reload()
-                }, 2000);
+                getUsers()
                 toast.success("User Generated  !!!")
             })
             .catch(err => {
@@ -133,6 +134,11 @@ const AdminDashboard = () => {
                 console.log(err)
             })
     }
+    const idToUserName = (id) => {
+        var i = users.findIndex(x => x._id == id)
+        console.log(users[i])
+        return users[i]
+    }
     return (
         <div>
             {
@@ -177,6 +183,7 @@ const AdminDashboard = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell> <b> User Name</b></TableCell>
+                                                <TableCell> <b> ID</b></TableCell>
                                                 <TableCell align="right"><b>Password</b></TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -186,6 +193,9 @@ const AdminDashboard = () => {
                                                 >
                                                     <TableCell component="th" scope="row">
                                                         {row.email}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        {row._id}
                                                     </TableCell>
                                                     <TableCell align="right">{row.passWordInText}</TableCell>
                                                 </TableRow>
@@ -252,11 +262,11 @@ const AdminDashboard = () => {
                                                                                                     </TableRow>
                                                                                                 </TableHead>
                                                                                                 <TableBody>
-                                                                                                    {rows.map((row, i) => (
+                                                                                                    {task.users?.map((row, i) => (
                                                                                                         <TableRow key={i}
                                                                                                         >
                                                                                                             <TableCell component="th" scope="row">
-                                                                                                                {row.name}
+                                                                                                                {row}
                                                                                                             </TableCell>
                                                                                                             <TableCell component="th" scope="row">
                                                                                                                 <span> <CircleIcon style={{ width: '10px', color: '#00f122' }} /> Online </span>
@@ -283,42 +293,67 @@ const AdminDashboard = () => {
                                     <Card className=''>
                                         <CardContent>
                                             <div className='p-3'>
-                                                <h3>Past Task </h3>
+                                                <h3>Past Task (Expired)  </h3>
                                                 <hr />
-                                                <h6>Task Details</h6>
-                                                <p>We first imported the features we'll be using – Routes and Route. After that, we imported all the components we needed to attach a route to. Now let's break down the process.</p>
-                                                <div>
-                                                    <Accordion>
-                                                        <AccordionSummary
-                                                            expandIcon={<ExpandMoreIcon />}
-                                                            aria-controls="panel1a-content"
-                                                            id="panel1a-header"
-                                                        >
-                                                            <Typography>  Participant </Typography>
-                                                        </AccordionSummary>
-                                                        <AccordionDetails>
-                                                            <TableContainer component={Paper}>
-                                                                <Table aria-label="simple table">
-                                                                    <TableHead>
-                                                                        <TableRow>
-                                                                            <TableCell> <b>User Name</b> </TableCell>
-                                                                        </TableRow>
-                                                                    </TableHead>
-                                                                    <TableBody>
-                                                                        {rows.map((row) => (
-                                                                            <TableRow
-                                                                            >
-                                                                                <TableCell component="th" scope="row">
-                                                                                    {row.name}
-                                                                                </TableCell>
-                                                                            </TableRow>
-                                                                        ))}
-                                                                    </TableBody>
-                                                                </Table>
-                                                            </TableContainer>
-                                                        </AccordionDetails>
-                                                    </Accordion>
-                                                </div>
+                                                {
+                                                    tasks.length < 1 ?
+                                                        <h5>No Task Available</h5> : ''
+                                                }
+                                                {
+                                                    tasks.map(task => {
+                                                        return (
+                                                            <div key={task.date}>
+                                                                {
+                                                                    isExpire(task.date, task.expireTime) ?
+                                                                        <div className='mb-5'>
+                                                                            <div className='task_header alert alert-success'>
+                                                                                <h6>Expire In
+                                                                                    <span className=''> <AccessTimeFilledIcon /> <b> {expTime(task.date, task.expireTime)} </b> </span>
+                                                                                </h6>
+                                                                            </div>
+                                                                            <p>{task.details}</p>
+                                                                            <div>
+                                                                                <Accordion>
+                                                                                    <AccordionSummary
+                                                                                        expandIcon={<ExpandMoreIcon />}
+                                                                                        aria-controls="panel1a-content"
+                                                                                        id="panel1a-header"
+                                                                                    >
+                                                                                        <Typography>  Participant </Typography>
+                                                                                    </AccordionSummary>
+                                                                                    <AccordionDetails>
+                                                                                        <TableContainer component={Paper}>
+                                                                                            <Table aria-label="simple table">
+                                                                                                <TableHead>
+                                                                                                    <TableRow>
+                                                                                                        <TableCell> <b>User Name</b> </TableCell>
+                                                                                                        <TableCell> <b>Active Status</b> </TableCell>
+                                                                                                    </TableRow>
+                                                                                                </TableHead>
+                                                                                                <TableBody>
+                                                                                                    {task.users.map((row, i) => (
+                                                                                                        <TableRow key={row}
+                                                                                                        >
+                                                                                                            <TableCell component="th" scope="row">
+                                                                                                                {idToUserName(row)?.email}
+                                                                                                            </TableCell>
+                                                                                                            <TableCell component="th" scope="row">
+                                                                                                                <span> <CircleIcon style={{ width: '10px', color: '#00f122' }} /> Participated </span>
+                                                                                                            </TableCell>
+                                                                                                        </TableRow>
+                                                                                                    ))}
+                                                                                                </TableBody>
+                                                                                            </Table>
+                                                                                        </TableContainer>
+                                                                                    </AccordionDetails>
+                                                                                </Accordion>
+                                                                            </div>
+                                                                        </div> : ''
+                                                                }
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
                                             </div>
                                         </CardContent>
                                     </Card>

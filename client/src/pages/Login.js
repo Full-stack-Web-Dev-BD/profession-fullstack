@@ -44,7 +44,7 @@ const Login = () => {
                             </div>
                             <div>
                                 <label>User Name / Email</label>
-                                <Input type='password' required onChange={e => setPassword(e.target.value)} fullWidth placeholder='Email' />
+                                <Input type='password' required onChange={e => setPassword(e.target.value)} fullWidth placeholder='Password' />
                             </div>
                             <div className='text-right mt-3'>
                                 <Button variant='contained' size='small' type='submit' color='secondary'> Login </Button>

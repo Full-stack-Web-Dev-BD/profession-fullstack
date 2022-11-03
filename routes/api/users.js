@@ -95,10 +95,8 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/all-user', (req, res) => {
-	console.log("api called ")
 	User.find()
 		.then(allUser => {
-			console.log(allUser)
 			res.json(allUser).status(200)
 		})
 		.catch(err => {

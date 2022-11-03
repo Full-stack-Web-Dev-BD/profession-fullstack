@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
 const pages = [];
-const settings = ['Profile'];
+const settings = ['Logout'];
 
 const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -34,6 +34,10 @@ const Navbar = () => {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+    const logout = () => {
+        window.localStorage.removeItem('authToken')
+        window.location.href = '/'
+    }
 
     return (
         <AppBar position="static">
@@ -147,11 +151,11 @@ const Navbar = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                            ))}
+
+                            <MenuItem  >
+                                <Typography textAlign="center"> Tasks </Typography>
+                            </MenuItem>
+                            <Button variant='contained' size='small' color='error' onClick={e => logout()} >Logout </Button>
                         </Menu>
                     </Box>
                 </Toolbar>

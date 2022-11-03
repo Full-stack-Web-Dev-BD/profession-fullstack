@@ -33,6 +33,7 @@ const Task = () => {
         var taskDate = moment(date).add(expTime, 'm').toDate()
         var now = moment()
         if (now > taskDate) {
+            // expired
             return true
         } else {
             return false
@@ -41,8 +42,18 @@ const Task = () => {
     const getTask = (args) => {
         if (args) {
             var url = queryString.parse(window.location.search)
+            // date ,expireTime 
             axios.get(`${baseURL}/api/task/${url.TID}`)
                 .then(resp => {
+                    var taskDate = moment(resp.data.date).add(resp.data.expireTime, 'm').toDate()
+                    var diffMS = moment(taskDate).diff(new Date(), 'milliseconds') // 0
+                    if (diffMS < 0) {
+                    } else {
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, diffMS);
+                    }
+
                     setTask(resp.data)
                     if (resp.data.users.indexOf(args.id) !== -1) {
                         setIsPerticipated(true)
@@ -57,6 +68,16 @@ const Task = () => {
             var url = queryString.parse(window.location.search)
             axios.get(`${baseURL}/api/task/${url.TID}`)
                 .then(resp => {
+                    var taskDate = moment(resp.data.date).add(resp.data.expireTime, 'm').toDate()
+                    var diffMS = moment(taskDate).diff(new Date(), 'milliseconds') // 0
+                    if (diffMS < 0) {
+                    } else {
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, diffMS);
+                    }
+
+
                     setTask(resp.data)
                     if (resp.data.users.indexOf(user.id) !== -1) {
                         setIsPerticipated(true)
@@ -104,8 +125,6 @@ const Task = () => {
     const getMyFeedback = (task) => {
         if (task?.answers?.findIndex((obj) => obj.uid === user.id) !== -1) {
             const myIndex = task.answers?.findIndex((obj) => obj.uid === user.id)
-            // console.log("task is ", task?.answers?.findIndex((obj) => obj.uid === user.id))
-            // console.log("length", task?.answers?.length, "My Index", myIndex)
             if (task?.answers?.length - 1 == myIndex) {
                 return task?.answers[0]
             } else {
@@ -184,22 +203,36 @@ const Task = () => {
                                                                                                         <p className='text-left text-info'> <b>Feedback:</b> In Pending   </p>
                                                                                                 }
                                                                                                 <div className='card mt-3 p-3 text-left'>
-                                                                                                    <div>
-                                                                                                        {
-                                                                                                            getMyFeedback(task).feedback ?
-                                                                                                                "Your Feedback Submitted" :
-                                                                                                                <div>
-                                                                                                                    <h5>Write Your Feedback</h5>
-                                                                                                                    <form onSubmit={e => doFeedback(e)}>
-                                                                                                                        <p>
-                                                                                                                            <b>Ans : </b> {getMyFeedback(task).answer}
-                                                                                                                        </p>
-                                                                                                                        <textarea value={feedback} onChange={e => setFeedback(e.target.value)} required rows={5} placeholder="Enter your Feedback  about  this  " className='form-control mb-3' />
-                                                                                                                        <Button variant='contained' size='small' type='submit' color='secondary'  > Feedback </Button>
-                                                                                                                    </form>
-                                                                                                                </div>
-                                                                                                        }
-                                                                                                    </div>
+                                                                                                    {
+                                                                                                        isExpire(task.date, task.expireTime) ?
+                                                                                                            <div>
+                                                                                                                {
+                                                                                                                    getMyFeedback(task).feedback ?
+                                                                                                                        "Your Feedback Submitted" :
+                                                                                                                        <div>
+                                                                                                                            <h5>Write Your Feedback</h5>
+                                                                                                                            <form onSubmit={e => doFeedback(e)}>
+                                                                                                                                <p>
+                                                                                                                                    <b>Ans : </b> {getMyFeedback(task).answer}
+                                                                                                                                </p>
+                                                                                                                                <textarea value={feedback} onChange={e => setFeedback(e.target.value)} required rows={5} placeholder="Enter your Feedback  about  this  " className='form-control mb-3' />
+                                                                                                                                <Button variant='contained' size='small' type='submit' color='secondary'  > Feedback </Button>
+                                                                                                                            </form>
+                                                                                                                        </div>
+                                                                                                                }
+                                                                                                            </div> :
+                                                                                                            <div>
+                                                                                                                <p style={{ color: '#9c27b0', fontWeight: '700' }}>You can Submit Feedback at  {expTime(task.date, task.expireTime)} By Reloading this Page Again !!! </p>
+                                                                                                                <form >
+                                                                                                                    <p>
+                                                                                                                        <b>Ans : </b> {getMyFeedback(task).answer}
+                                                                                                                    </p>
+                                                                                                                    <textarea disabled value={feedback} onChange={e => setFeedback(e.target.value)} required rows={5} placeholder="Enter your Feedback  about  this  " className='form-control mb-3' />
+                                                                                                                    <Button disabled variant='contained' size='small' type='submit' color='secondary'  > Feedback </Button>
+                                                                                                                </form>
+                                                                                                            </div>
+
+                                                                                                    }
                                                                                                 </div>
                                                                                             </div> : ''
                                                                                     }

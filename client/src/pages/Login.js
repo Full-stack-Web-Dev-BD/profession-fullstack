@@ -2,11 +2,25 @@ import { Button, Card, CardContent, Input } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import axios from 'axios'
-import { baseURL } from '../constant'
+import { baseURL, UserType } from '../constant'
 import jwtDecode, { } from 'jwt-decode'
 const Login = () => {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
+
+    useEffect(() => {
+        if (window.localStorage.getItem('authToken')) {
+            const user = jwtDecode(window.localStorage.getItem('authToken'))
+            if (user.type == UserType.instructor) {
+                window.location.href = "/admin"
+            } else {
+                window.location.href = '/dashboard'
+            }
+        }
+    }, [])
+
+
+
     const submitHandler = (e) => {
         e.preventDefault()
         if (email && password) {

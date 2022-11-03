@@ -52,10 +52,8 @@ const AdminDashboard = () => {
         var taskDate = moment(date).add(expTime, 'm').toDate()
         var now = moment()
         if (now > taskDate) {
-            console.log("Expired")
             return true
         } else {
-            console.log('NOt Expired')
             return false
         }
     }
@@ -111,6 +109,45 @@ const AdminDashboard = () => {
                                                                                 <h6>Expire In
                                                                                     <span className=''> <AccessTimeFilledIcon /> <b> {expTime(task.date, task.expireTime)} </b> </span>
                                                                                     {/* {expTime(task.date, task.expireTime)} */}
+                                                                                </h6>
+                                                                            </div>
+                                                                            <p>{task.details}</p>
+                                                                            <div className='text-right'>
+                                                                                <a href={`/task?TID=${task._id}`} >
+                                                                                    <Button variant='contained' size='small' type='submit' color='primary' className='ml-3'> Details </Button>
+                                                                                </a>
+                                                                            </div>
+                                                                        </div> : ''
+                                                                }
+                                                            </>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+
+                                <div className='mt-4'>
+                                    <Card className=''>
+                                        <CardContent>
+                                            <div className='p-3'>
+                                                <h3>Past Task (History)  </h3>
+                                                <hr />
+                                                {
+                                                    tasks.length < 1 ?
+                                                        <h5>No Task Available</h5> : ''
+                                                }
+                                                {
+                                                    tasks.map(task => {
+                                                        return (
+                                                            <>
+                                                                {
+                                                                    isExpire(task.date, task.expireTime) ?
+                                                                        <div key={task.date} className='mb-5'>
+                                                                            <div className='task_header alert alert-warning'>
+                                                                                <h6>Expired
+                                                                                    <span className=''> <AccessTimeFilledIcon /> <b> {expTime(task.date, task.expireTime)} </b> </span>
                                                                                 </h6>
                                                                             </div>
                                                                             <p>{task.details}</p>

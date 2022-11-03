@@ -262,14 +262,14 @@ const AdminDashboard = () => {
                                                                                                     </TableRow>
                                                                                                 </TableHead>
                                                                                                 <TableBody>
-                                                                                                    {task.users?.map((row, i) => (
-                                                                                                        <TableRow key={i}
+                                                                                                    {task.users.map((row, i) => (
+                                                                                                        <TableRow key={row}
                                                                                                         >
                                                                                                             <TableCell component="th" scope="row">
-                                                                                                                {row}
+                                                                                                                {idToUserName(row)?.email}
                                                                                                             </TableCell>
                                                                                                             <TableCell component="th" scope="row">
-                                                                                                                <span> <CircleIcon style={{ width: '10px', color: '#00f122' }} /> Online </span>
+                                                                                                                <span> <CircleIcon style={{ width: '10px', color: '#00f122' }} /> Participated </span>
                                                                                                             </TableCell>
                                                                                                         </TableRow>
                                                                                                     ))}
